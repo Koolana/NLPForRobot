@@ -75,7 +75,7 @@ def extractDataAndLemmatization(pathToFile=''):
 
 if __name__ == '__main__':
     # Вывод предложений после лемматизации для задачи нахождения предложений содержащих комнаду
-    print(*extractDataAndLemmatization('outputdataDirty.csv')[:10], sep='\n')
+    print(*extractDataAndLemmatization('../datasets/outputdataDirty.csv')[:10], sep='\n')
 
     # Вывод предложений после лемматизации для задачи seg2seg предложений содержащих команду
-    print(extractDataAndLemmatization('outputdataClean.csv')[:10], sep='\n')
+    print(extractDataAndLemmatization('../datasets/outputdataClean.csv')[:10], sep='\n')
