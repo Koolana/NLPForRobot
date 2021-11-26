@@ -56,9 +56,9 @@ def sentsLemmatization(text):
 
 # Формат выходного list:
 # data
-#   |----sentence
-#   |        |----lemma words
-#   |----label
+#    |----sentence
+#    |           |----lemma words
+#    |----label
 
 def extractDataAndLemmatization(pathToFile=''):
     f = open(pathToFile, 'r')
