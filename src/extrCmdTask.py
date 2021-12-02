@@ -9,4 +9,3 @@ if __name__ == '__main__':
 
     ### Некоторые действия на data ###
     print(*data[:10], sep='\n')
-    print('Hello')
