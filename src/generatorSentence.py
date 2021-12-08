@@ -4,7 +4,7 @@ import re
 countries = ['Африка','Бразилия','Евразия','Антарктида','Южная Америка','Северная Америка']
 moveCmd = ['поезжай', 'сгоняй', 'следуй','доберись', 'дойди', 'переместись', 'приедь', 'прибудь', 'заедь', 'иди','пойди','зайди','сходи', 'съезди','телепортируйся','сбегай']
 preposition = ['и','и затем','а затем','и потом', 'а потом', 'и после', 'а после', 'затем','потом','после','после этого','а после этого', 'и после этого','после чего','а после чего', 'и после чего', 'и только тогда', 'и только после этого', 'и только потом', 'и вот только тогда']
-places = ['кампус COUNTRY','пункт NUM', 'кабинет NUM', 'аудитория NUM', 'отдел кадров', 'медпункт', 'библиотека', 'пост охраны']
+places = ['кампус COUNTRY','пункт NUM', 'кабинет NUM', 'аудитория NUM', 'отдел кадров', 'медпункт', 'библиотека', 'пост охраны','буфет']
 objs = ['аптечка','документ','инструмент','тетрадь','печать','блокнот','телефон','зонтик','документация','чашка','кружка','пенал','работа','груз','весы','объект','прибор','ножницы','яблоко','пицца']
 actions = ['принеси','привези', 'отнеси','увези','отдай', 'занеси', 'возьми', 'доставь', 'отвези', 'довези', 'захвати','прихвати', 'забери', 'передай']
 
@@ -15,9 +15,9 @@ be_kind = ['будь добр','будь так добр','друг','дружо
 hello = ['добрый день','добрый вечер','доброе утро','привет',''] 
 
 clarification = ['именно','вот','только','']
-dirF = ['туда','для них', 'коллегам', 'им']
+dirF = ['туда','для них', 'коллегам', 'им', 'коллективу']
 dirB = ['оттуда', 'сюда', 'для нас','для меня','нам','мне']
-dir_only_here = ['CLALIFICAT сюда', 'для нас CLALIFICAT','для меня CLALIFICAT','нам CLALIFICAT','мне CLALIFICAT']
+dir_only_here = ['CLALIFICAT сюда','сюда CLALIFICAT', 'для нас CLALIFICAT','CLALIFICAT для нас','для меня CLALIFICAT','CLALIFICAT для меня','нам CLALIFICAT','CLALIFICAT нам','мне CLALIFICAT','CLALIFICAT мне']
 
 back = ['PRE COPY_MOVE_C назад','PRE возвращайся обратно', 'PRE возвращайся', 'PRE вернись', 'PRE COPY_MOVE_C обратно', 'PRE COPY_MOVE_C на прежнее место', 'PRE COPY_MOVE_C в исходную точку', 'PRE COPY_MOVE_C в начальную точку']
 
@@ -29,10 +29,13 @@ back_with_may = ['PRE COPY_MOV_CMD назад', 'PRE вернуться', 'PRE C
 Names_1 = ['Николай','Сергей Александрович','Алексей Вячеславович','Полина','Ксения','Настя']
 Names_2 = ['Николаю','Сергею Александровичу','Алексею Вячеславовичу','Полине','Ксении','Насте']
 Names_3 = ['Николай и Ксения','Полина и Настя','Полина и Ксения']
+My1 = ['его', 'ее', 'их','мой','наш','твой','']
+My2 = ['его','ее', 'их','моя','наша','твоя','']
+My3 = ['его','ее', 'их','мои','наши','твои','']
 I = ['я','']
-He = ['он', 'она', 'коллега','команда', 'коллектив', 'NAME_1']
+He = ['он', 'она', 'MY_2 группа','MY_1 коллега','MY_2 команда','MY_1 состав', 'MY_1 коллектив', 'NAME_1']
 We = ['мы','']
-They = ['они','коллеги', 'руководители', 'NAME_3']
+They = ['они','MY_3 коллеги', 'MY_3 руководители','MY_3 группы', 'NAME_3']
 Me = ['мне','ему','ей','нам', 'им', 'коллегам','команде', 'руководителям', 'коллективу', 'NAME_2','']
 
 I_want = ['хочу','желаю','прошу','требую','жажду']
@@ -90,6 +93,9 @@ dictTargets = {
                'NAME_1' : Names_1,
                'NAME_2' : Names_2,
                'NAME_3' : Names_3,
+               'MY_1' : My1,
+               'MY_2' : My2,
+               'MY_3' : My3,
                'NUM' : [str(i) for i in range(0, 1000)]}
 
 cmdTemplate = ['взять(OBJ) движение(PLACE_1)',
@@ -153,19 +159,19 @@ sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],         
                 [1, 'MAY M_ACT OBJ PLEASE ONLY_HERE из PLACE_1'],               # 53
                 [1, 'PLEASE MAY M_ACT OBJ ONLY_HERE из PLACE_1'],               # 54
                 [1, 'ACTION OBJ из PLACE_1 ONLY_HERE PLEASE'],                  # 55
-                [1, 'HI COM_I WANT_I чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_THEREACT OBJ ONLY_HERE'],         # 56
+                [1, 'HI COM_I WANT_I чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],          # 56
                 [0, 'HI COM_I WANT_I чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                   # 57
                 [2, 'HI COM_I WANT_I чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                          # 58
-                [1, 'HI COM_HE WANT_HE чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_THEREACT OBJ ONLY_HERE'],       # 59
+                [1, 'HI COM_HE WANT_HE чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],        # 59
                 [0, 'HI COM_HE WANT_HE чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 60 
                 [2, 'HI COM_HE WANT_HE чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 61 
-                [1, 'HI COM_WE WANT_WE чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_THEREACT OBJ ONLY_HERE'],       # 62
+                [1, 'HI COM_WE WANT_WE чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],        # 62
                 [0, 'HI COM_WE WANT_WE чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 63 
                 [2, 'HI COM_WE WANT_WE чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 64 
-                [1, 'HI COM_ME WANT_ME чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_THEREACT OBJ ONLY_HERE'],       # 65
+                [1, 'HI COM_ME WANT_ME чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],        # 65
                 [0, 'HI COM_ME WANT_ME чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 66 
                 [2, 'HI COM_ME WANT_ME чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 67
-                [1, 'HI COM_THEY WANT_THEY чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_THEREACT OBJ ONLY_HERE'],   # 68
+                [1, 'HI COM_THEY WANT_THEY чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],    # 68
                 [0, 'HI COM_THEY WANT_THEY чтобы ты WANT_THEREACT OBJ в PLACE_1'],                             # 69 
                 [2, 'HI COM_THEY WANT_THEY чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                    # 70
                 [1, 'HI COM_I WANT_I чтобы ты WANT_THEREACT OBJ ONLY_HERE из PLACE_1'],                        # 71
