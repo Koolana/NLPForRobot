@@ -201,7 +201,7 @@ sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],         
 def generateSent(numSent):
     sents = []
     for i in range(numSent):
-        template = sentTemplate[85]#random.randint(0, len(sentTemplate) - 1)] # random.randint(0, len(sentTemplate) - 1)
+        template = sentTemplate[random.randint(0, len(sentTemplate) - 1)]#random.randint(0, len(sentTemplate) - 1)] # random.randint(0, len(sentTemplate) - 1)
         # template = sentTemplate[11]
 
         sent = template[1]
