@@ -1,26 +1,28 @@
+import torch
 from torch.utils.data import Dataset, DataLoader
 
 import csv
+
+def ensureLength(txt, sentLen=50, padValue=0):
+    if len(txt) < sentLen:
+        txt = list(txt) + [padValue] * (sentLen - len(txt))
+    else:
+        txt = txt[:sentLen]
+    return txt
 
 class TextDataset(Dataset):
     def __init__(self, idsTokenizedSource, idsTokenizedTarget, sentLen=50, padValue=0):
         self.idsTokenizedSource = idsTokenizedSource
         self.idsTokenizedTarget = idsTokenizedTarget
         self.sentLen = sentLen
+        self.padValue = padValue
 
     def __getitem__(self, item):
-        return torch.tensor(self.ensureLength(self.idsTokenizedSource[item])), \
-               torch.tensor(self.ensureLength(self.idsTokenizedTarget[item]))
+        return torch.tensor(ensureLength(self.idsTokenizedSource[item], self.sentLen, self.padValue)), \
+               torch.tensor(ensureLength(self.idsTokenizedTarget[item], self.sentLen, self.padValue))
 
     def __len__(self):
         return len(self.idsTokenizedSource)
-
-    def ensureLength(self, txt):
-        if len(txt) < self.sentLen:
-            txt = list(txt) + [pad_value] * (self.sentLen - len(txt))
-        else:
-            txt = txt[:self.sentLen]
-        return txt
 
 class DataCreater():
     def __init__(self, tokenizerSource, tokenizerTarget, path='../datasets/outputdataClean.csv', numData=2000):
