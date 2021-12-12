@@ -20,6 +20,7 @@ if __name__ == '__main__':
     pathToRoberta = '../models/ruRoberta-large'
     pathToDataset = '../datasets/outputdataClean.csv'
     pathToOutputModel = '../models/robot-brain-v2.pt'
+    numData = 10000
     numEpochs = 10
     clip = 1
 
@@ -29,7 +30,8 @@ if __name__ == '__main__':
 
     dataCreater = DataCreater(tokenizerEnc.convertSentToIds,
                               tokenizerDec.convertSentToIds,
-                              path=pathToDataset)
+                              path=pathToDataset,
+                              numData=numData)
 
     trainDataLoader, valDataLoader = dataCreater.getDataLoaders()
 

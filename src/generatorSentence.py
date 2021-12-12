@@ -1,3 +1,5 @@
+from lemmDataFromFile import sentsLemmatization
+
 import random
 import re
 
@@ -10,9 +12,9 @@ actions = ['принеси','привези', 'отнеси','увези','от�
 
 action_there = ['принеси','привези', 'отнеси','увези','отдай','отвези','занеси','возьми','доставь','довези','захвати','прихвати', 'забери', 'передай']
 action_here = ['принеси','привези','занеси','возьми','доставь','захвати','прихвати', 'забери', 'передай']
-please = ['пожалуйста',''] 
+please = ['пожалуйста','']
 be_kind = ['будь добр','будь так добр','друг','дружок','будь другом','прошу', 'сделай одолжение','добрый день','добрый вечер','доброе утро','привет','сделай доброе дело','бога ради','точно','']
-hello = ['добрый день','добрый вечер','доброе утро','привет','здравствуй','привет',''] 
+hello = ['добрый день','добрый вечер','доброе утро','привет','здравствуй','привет','']
 
 clarification = ['именно','вот','только','как раз','']
 dirF = ['туда','для них', 'коллегам', 'им', 'коллективу']
@@ -56,7 +58,7 @@ back_want = ['PRE WANT_COM_MOVE назад', 'PRE вернулся', 'PRE WANT_C
 
 
 dictTargets = {
-               
+
                'BACK' : back,
                'M_BAC' : back_with_may,
                'MAY' : may,
@@ -105,39 +107,39 @@ dictTargets = {
                'ADJECTIVE_3' : pril_3,
                'NUM' : [str(i) for i in range(0, 1000)]}
 
-cmdTemplate = ['взять(OBJ) движение(PLACE_1)',
-               'движение(PLACE_1) взять(OBJ) движение(обратно)',
-               'взять(OBJ) движение(PLACE_1) движение(обратно)',
-               'движение(PLACE_1) взять(OBJ) движение(PLACE_2)']
+cmdTemplate = ['взять(OBJ)взять движение(PLACE_1)движение',
+               'движение(PLACE_1)движение взять(OBJ)взять движение(обратно)движение',
+               'взять(OBJ)взять движение(PLACE_1)движение движение(обратно)движение',
+               'движение(PLACE_1)движение взять(OBJ)взять движение(PLACE_2)движение']
 
 sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],           # 0
                 [0, 'MOVE_CMD PLEASE в PLACE_1 и TH_ACT DIR_F OBJ'],            # 1
-                [2, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ BACK'],      # 2  
+                [2, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ BACK'],      # 2
                 [2, 'MOVE_CMD PLEASE в PLACE_1 и TH_ACT DIR_F OBJ BACK'],       # 3
-                [1, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_B OBJ'],           # 4 
+                [1, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_B OBJ'],           # 4
                 [1, 'MOVE_CMD PLEASE в PLACE_1 и TH_ACT DIR_B OBJ'],            # 5
-                [0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT OBJ DIR_F'],           # 6 
+                [0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT OBJ DIR_F'],           # 6
                 [0, 'MOVE_CMD PLEASE в PLACE_1 и TH_ACT OBJ DIR_F'],            # 7
-                [2, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT OBJ DIR_F BACK'],      # 8 
+                [2, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT OBJ DIR_F BACK'],      # 8
                 [2, 'MOVE_CMD PLEASE в PLACE_1 и TH_ACT OBJ DIR_F BACK'],       # 9
-                [1, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT OBJ DIR_B'],           # 10 
+                [1, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT OBJ DIR_B'],           # 10
                 [1, 'MOVE_CMD PLEASE в PLACE_1 и TH_ACT OBJ DIR_B'],            # 11
-                [1, 'BE_KIND ACT_H OBJ из PLACE_1'],                            # 12        
-                [1, 'ACT_H OBJ PLEASE из PLACE_1'],                             # 13        
-                [1, 'BE_KIND ACT_H OBJ из PLACE_1'],                            # 14         
+                [1, 'BE_KIND ACT_H OBJ из PLACE_1'],                            # 12
+                [1, 'ACT_H OBJ PLEASE из PLACE_1'],                             # 13
+                [1, 'BE_KIND ACT_H OBJ из PLACE_1'],                            # 14
                 [1, 'PLEASE ACT_H OBJ из PLACE_1'],                             # 15
-                [0, 'BE_KIND TH_ACT OBJ в PLACE_1'],                            # 16         
+                [0, 'BE_KIND TH_ACT OBJ в PLACE_1'],                            # 16
                 [0, 'TH_ACT OBJ PLEASE в PLACE_1'],                             # 17
-                [0, 'BE_KIND TH_ACT OBJ в PLACE_1'],                            # 18         
+                [0, 'BE_KIND TH_ACT OBJ в PLACE_1'],                            # 18
                 [0, 'PLEASE TH_ACT OBJ в PLACE_1'],                             # 19
-                [0, 'BE_KIND TH_ACT OBJ в PLACE_1'],                            # 20                
-                [2, 'BE_KIND TH_ACT OBJ в PLACE_1 BACK'],                       # 21         
+                [0, 'BE_KIND TH_ACT OBJ в PLACE_1'],                            # 20
+                [2, 'BE_KIND TH_ACT OBJ в PLACE_1 BACK'],                       # 21
                 [2, 'TH_ACT OBJ PLEASE в PLACE_1 BACK'],                        # 22
-                [2, 'BE_KIND TH_ACT OBJ в PLACE_1 BACK'],                       # 23         
+                [2, 'BE_KIND TH_ACT OBJ в PLACE_1 BACK'],                       # 23
                 [2, 'PLEASE TH_ACT OBJ в PLACE_1 BACK'],                        # 24
-                [2, 'BE_KIND TH_ACT OBJ в PLACE_1 BACK'],                       # 25            
-                [0, 'MAY M_MOV_CMD PLEASE в PLACE_1 и M_ACT DIR_F OBJ'],        # 26    
-                [2, 'MAY M_MOV_CMD PLEASE в PLACE_1 и M_ACT DIR_F OBJ M_BAC'],  # 27    
+                [2, 'BE_KIND TH_ACT OBJ в PLACE_1 BACK'],                       # 25
+                [0, 'MAY M_MOV_CMD PLEASE в PLACE_1 и M_ACT DIR_F OBJ'],        # 26
+                [2, 'MAY M_MOV_CMD PLEASE в PLACE_1 и M_ACT DIR_F OBJ M_BAC'],  # 27
                 [1, 'MAY M_MOV_CMD PLEASE в PLACE_1 и M_ACT DIR_B OBJ'],        # 28
                 [0, 'MAY M_MOV_CMD PLEASE в PLACE_1 и M_ACT OBJ DIR_F'],        # 29
                 [2, 'MAY M_MOV_CMD PLEASE в PLACE_1 и M_ACT OBJ DIR_F M_BAC'],  # 30
@@ -146,7 +148,7 @@ sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],         
                 [1, 'PLEASE MAY M_ACT OBJ из PLACE_1'],                         # 33
                 [0, 'MAY M_ACT OBJ PLEASE в PLACE_1'],                          # 34
                 [0, 'PLEASE MAY M_ACT OBJ в PLACE_1'],                          # 35
-                [0, 'MAY M_ACT OBJ в PLACE_1'],                                 # 36                      
+                [0, 'MAY M_ACT OBJ в PLACE_1'],                                 # 36
                 [2, 'MAY M_ACT OBJ PLEASE в PLACE_1 M_BAC'],                    # 37
                 [2, 'PLEASE MAY M_ACT OBJ в PLACE_1 M_BAC'],                    # 38
                 [2, 'MAY M_ACT OBJ в PLACE_1 M_BAC'],                           # 39
@@ -154,12 +156,12 @@ sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],         
                 [2, 'TH_ACT OBJ в PLACE_1 BACK PLEASE'],                        # 41
                 [1, 'MAY M_ACT OBJ из PLACE_1 PLEASE'],                         # 42
                 [0, 'MAY M_ACT OBJ в PLACE_1 PLEASE'],                          # 43
-                [1, 'BE_KIND ACTION ONLY_HERE OBJ из PLACE_1'],                 # 44        
-                [1, 'ACTION ONLY_HERE OBJ PLEASE из PLACE_1'],                  # 45        
-                [1, 'BE_KIND ACTION ONLY_HERE OBJ из PLACE_1'],                 # 46         
-                [1, 'PLEASE ACTION ONLY_HERE OBJ из PLACE_1'],                  # 47                
+                [1, 'BE_KIND ACTION ONLY_HERE OBJ из PLACE_1'],                 # 44
+                [1, 'ACTION ONLY_HERE OBJ PLEASE из PLACE_1'],                  # 45
+                [1, 'BE_KIND ACTION ONLY_HERE OBJ из PLACE_1'],                 # 46
+                [1, 'PLEASE ACTION ONLY_HERE OBJ из PLACE_1'],                  # 47
                 [1, 'MAY M_ACT ONLY_HERE OBJ PLEASE из PLACE_1'],               # 48
-                [1, 'PLEASE MAY ONLY_HERE M_ACT OBJ из PLACE_1'],               # 49               
+                [1, 'PLEASE MAY ONLY_HERE M_ACT OBJ из PLACE_1'],               # 49
                 [1, 'ACTION ONLY_HERE OBJ из PLACE_1 PLEASE'],                  # 50
                 [1, 'BE_KIND ACTION OBJ ONLY_HERE из PLACE_1'],                 # 51
                 [1, 'ACTION OBJ PLEASE ONLY_HERE из PLACE_1'],                  # 52
@@ -170,16 +172,16 @@ sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],         
                 [0, 'HI COM_I WANT_I чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                   # 57
                 [2, 'HI COM_I WANT_I чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                          # 58
                 [1, 'HI COM_HE WANT_HE чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],        # 59
-                [0, 'HI COM_HE WANT_HE чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 60 
-                [2, 'HI COM_HE WANT_HE чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 61 
+                [0, 'HI COM_HE WANT_HE чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 60
+                [2, 'HI COM_HE WANT_HE чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 61
                 [1, 'HI COM_WE WANT_WE чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],        # 62
-                [0, 'HI COM_WE WANT_WE чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 63 
-                [2, 'HI COM_WE WANT_WE чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 64 
+                [0, 'HI COM_WE WANT_WE чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 63
+                [2, 'HI COM_WE WANT_WE чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 64
                 [1, 'HI COM_ME WANT_ME чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],        # 65
-                [0, 'HI COM_ME WANT_ME чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 66 
+                [0, 'HI COM_ME WANT_ME чтобы ты WANT_THEREACT OBJ в PLACE_1'],                                 # 66
                 [2, 'HI COM_ME WANT_ME чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                        # 67
                 [1, 'HI COM_THEY WANT_THEY чтобы ты WANT_COM_MOVE в PLACE_1 и WANT_HEREACT OBJ ONLY_HERE'],    # 68
-                [0, 'HI COM_THEY WANT_THEY чтобы ты WANT_THEREACT OBJ в PLACE_1'],                             # 69 
+                [0, 'HI COM_THEY WANT_THEY чтобы ты WANT_THEREACT OBJ в PLACE_1'],                             # 69
                 [2, 'HI COM_THEY WANT_THEY чтобы ты WANT_THEREACT OBJ в PLACE_1 WANT_BAC'],                    # 70
                 [1, 'HI COM_I WANT_I чтобы ты WANT_THEREACT OBJ ONLY_HERE из PLACE_1'],                        # 71
                 [1, 'HI COM_HE WANT_HE чтобы ты WANT_THEREACT OBJ ONLY_HERE из PLACE_1'],                      # 72
@@ -192,11 +194,11 @@ sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],         
                 [1, 'HI COM_ME WANT_ME чтобы ты WANT_HEREACT OBJ из PLACE_1'],                                 # 79
                 [1, 'HI COM_THEY WANT_THEY чтобы ты WANT_HEREACT OBJ из PLACE_1'],                             # 80
                 [2, 'HI COM_I WANT_I чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC'],                          # 81
-                [2, 'HI COM_HE WANT_HE чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC'],                        # 82 
-                [2, 'HI COM_WE WANT_WE чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC'],                        # 83 
-                [2, 'HI COM_ME WANT_ME чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC'],                        # 84 
-                [2, 'HI COM_THEY WANT_THEY чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC']                     # 85 
-                ]   
+                [2, 'HI COM_HE WANT_HE чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC'],                        # 82
+                [2, 'HI COM_WE WANT_WE чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC'],                        # 83
+                [2, 'HI COM_ME WANT_ME чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC'],                        # 84
+                [2, 'HI COM_THEY WANT_THEY чтобы ты в PLACE_1 WANT_THEREACT OBJ WANT_BAC']                     # 85
+                ]
 
 def generateSent(numSent):
     sents = []
@@ -213,15 +215,31 @@ def generateSent(numSent):
 
         sent = re.sub(r'\s+', ' ', sent)
         sent = sent.strip()
-       
+
         sentExist = False
         for j in sents:
             if j[1] == sent:
                 sentExist = True
                 break
-            
+
         # Если его нет в sents то:
         if not sentExist:
             sents.append([cmd, sent])
-        
+
     return sents
+
+if __name__ == '__main__':
+    pathToDataset = '../datasets/outputdataClean.csv'
+    numSentences = 10000
+
+    sents = generateSent(numSentences)
+
+    random.shuffle(sents)
+
+    f = open(pathToDataset, 'w')
+
+    for sent in sents:
+        # f.write(' '.join(*sentsLemmatization(sent[1]+'.')) + ',' + sent[0] + '\n')
+        f.write(sent[1] + ',' + sent[0] + '\n')
+
+    f.close()
