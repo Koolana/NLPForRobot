@@ -7,11 +7,23 @@ from gtts import gTTS
 # Library to play mp3
 from pygame import mixer
 
+import torch
+from runModel import Translater
+
 mixer.init()
 
 # Microphone and recognition
 r = sr.Recognizer()
 m = sr.Microphone()
+
+pathToRoberta = '../models/ruRoberta-large'
+pathToModel = '../models/robot-brain-v2.pt'
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('Use:', device)
+
+translater = Translater(pathToRoberta, pathToModel, device)
+print('Translater done!')
 
 try:
     print("A moment of silence, please...")
@@ -26,15 +38,8 @@ try:
         try:
             statement = r.recognize_google(audio, language="ru_RU")
 
-            # Synthesize speech from bot answer
-            tts = gTTS(text=str(statement), lang="ru")
-            tts.save("speach.mp3")
-
-            # Play answer
-            mixer.music.load('speach.mp3')
-            mixer.music.play()
-
-            print("You said {}".format(statement))
+            print("You said: {}".format(statement))
+            print("Your command: {}\n".format(translater.recognizeCmd(str(statement))))
         except sr.UnknownValueError:
             print("Oops! Didn't catch that")
         except sr.RequestError as e:
