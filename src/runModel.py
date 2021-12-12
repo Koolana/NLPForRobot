@@ -73,6 +73,7 @@ if __name__ == '__main__':
 
     translater = Translater(pathToRoberta, pathToModel, device)
 
-    inputSent = input('Введите предложение: ')
-    print('Ввод:', inputSent)
-    print('Вывод:', translater.recognizeCmd(inputSent))
+    while True:
+        inputSent = input('Введите предложение: ')
+        print('Ввод:', inputSent)
+        print('Вывод:', translater.recognizeCmd(inputSent))
