@@ -2,15 +2,71 @@
 
 # датасет в файле outputdataClean.csv формата: str(sentence),str(robot_sentence)
 
+import re
+import sys
 import torch
+from torchtext.data.metrics import bleu_score
 
 from transformers import RobertaTokenizer
 from wrapperRobertaTokenizer import WrapperRobertaTokenizer
 from decoderTokenizer import DecoderTokenizer
 from dataProcessing import ensureLength
 from model import createModel
+from dataProcessing import DataCreater
 
 from lemmDataFromFile import sentsLemmatization
+
+def getConsoleArgs():
+    """
+    Returns a dictionary of arguments passed to through the CLI.
+    """
+
+    args = {}
+
+    for arg in sys.argv[1:]:
+        var = re.search('\-\-([A-Za-z]*)', arg) # optional value assignment
+        var = var.group(1)
+        value = re.search('\=(.*)', arg)
+        value = value.group(1) if value else None
+        args[var] = value
+
+    return args
+
+def calculateMetrics(pathToRoberta, pathToModel, pathToData, device):
+    tokenizerRoberta = RobertaTokenizer.from_pretrained(pathToRoberta)
+    tokenizerEnc = WrapperRobertaTokenizer(tokenizerRoberta)
+    tokenizerDec = DecoderTokenizer(tokenizerEnc)
+
+    model = createModel(device)
+    model.load_state_dict(torch.load(pathToModel))
+
+    dataCreater = DataCreater(tokenizerEnc.convertSentToIds,
+                              tokenizerDec.convertSentToIds,
+                              path=pathToData,
+                              numData=5000)
+
+    testDataLoader, _ = dataCreater.getDataLoaders(splitValue=1, batchSize=1)
+
+    return calculateBleu(testDataLoader, tokenizerDec, model, device)
+
+def calculateBleu(data, tokenizerDec, model, device, max_len = 50):
+    trgs = []
+    pred_trgs = []
+
+    for datum in data:
+        src = datum[0][0].tolist()
+        trg = datum[1][0].tolist()
+
+        trgTokens = tokenizerDec.convertIdsToSent(trg, src)
+
+        pred_trg, _ = translate_sentence(src, 0, 0, model, device, max_len)
+
+        pred_trg = tokenizerDec.convertIdsToSent(ensureLength(pred_trg), src)
+
+        trgs.append([trgTokens])
+        pred_trgs.append(pred_trg)
+
+    return bleu_score(pred_trgs, trgs)
 
 def translate_sentence(inputIds, src_field, trg_field, model, device, max_len=50):
     model.eval()
@@ -65,15 +121,44 @@ class Translater():
         return textTarget
 
 if __name__ == '__main__':
-    pathToRoberta = '../models/ruRoberta-large'
-    pathToModel = '../models/robot-brain-v2.pt'
+    pathToRoberta = None
+    pathToModel = None
+    pathToData = None
+
+    inputArgv = getConsoleArgs()
+
+    if 'metric' in inputArgv and inputArgv['metric'] is not None:
+        pathToData = inputArgv['metric']
+
+    if 'roberta' in inputArgv and inputArgv['roberta'] is not None:
+        pathToRoberta = inputArgv['roberta']
+    else:
+        print('Invalid parameter \'roberta\'')
+        exit()
+
+    if 'model' in inputArgv and inputArgv['model'] is not None:
+        pathToModel = inputArgv['model']
+    else:
+        print('Invalid parameters \'model\'')
+        exit()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('Используется:', device)
 
-    translater = Translater(pathToRoberta, pathToModel, device)
+    if pathToData is not None:
+        print('On metric mode')
+        print('BLUE score:', calculateMetrics(pathToRoberta, pathToModel, pathToData, device))
+    else:
+        print('On recognition mode')
+        translater = Translater(pathToRoberta, pathToModel, device)
 
-    while True:
-        inputSent = input('Введите предложение: ')
-        print('Ввод:', inputSent)
-        print('Вывод:', translater.recognizeCmd(inputSent))
+        while True:
+            inputSent = input('Введите предложение: ')
+            print('Ввод:', inputSent)
+
+            cdmSent = translater.recognizeCmd(inputSent)
+            cdmSent = ' '.join(cdmSent)
+            cdmSent = re.sub('(\d+)([а-яА-Яa-zA-Z])', r'\1 \2', cdmSent)
+            cdmSent = re.sub('([а-яА-Яa-zA-Z])(\d+)', r'\1 \2', cdmSent)
+            cdmSent = re.sub('\s+', r' ', cdmSent).strip()
+            print('Вывод:', cdmSent)

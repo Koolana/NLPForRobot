@@ -58,7 +58,7 @@ class DecoderTokenizer():
         return dict(zip(bs, cs))
 
     def convertIdsToSent(self, ids, refSent):
-        tokens = [' взять(', ')взять ', ' движение(', ')движение ', ' движение(обратно)движение ']
+        tokens = ['взять(', ')взять', 'движение(', ')движение', 'движение(обратно)движение']
         output=[]
 
         for i in range(len(ids)):
@@ -72,9 +72,9 @@ class DecoderTokenizer():
                     idToWords = bytearray([self.byte_decoder[c] for c in self.refTokenizer.convertIdsToSent(ids[i])]).decode('utf-8')
                     output.append(idToWords)
 
-        output = ''.join(output)
-        output = re.sub('(\d+)([а-яА-Яa-zA-Z])', r'\1 \2', output)
-        output = re.sub('([а-яА-Яa-zA-Z])(\d+)', r'\1 \2', output)
-        output = re.sub('\s+', r' ', output).strip()
+        # output = ''.join(output)
+        # output = re.sub('(\d+)([а-яА-Яa-zA-Z])', r'\1 \2', output)
+        # output = re.sub('([а-яА-Яa-zA-Z])(\d+)', r'\1 \2', output)
+        # output = re.sub('\s+', r' ', output).strip()
 
         return output

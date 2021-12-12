@@ -2,6 +2,7 @@ from lemmDataFromFile import sentsLemmatization
 
 import random
 import re
+from tqdm import tqdm
 
 countries = ['Африка','Бразилия','Евразия','Антарктида','Южная Америка','Северная Америка']
 moveCmd = ['поезжай', 'сгоняй', 'следуй','доберись', 'дойди', 'переместись', 'приедь', 'прибудь', 'заедь', 'иди','пойди','зайди','сходи', 'съезди','телепортируйся','сбегай','забеги']
@@ -202,7 +203,7 @@ sentTemplate = [[0, 'BE_KIND MOVE_CMD в PLACE_1 и TH_ACT DIR_F OBJ'],         
 
 def generateSent(numSent):
     sents = []
-    for i in range(numSent):
+    for i in tqdm(range(numSent)):
         template = sentTemplate[random.randint(0, len(sentTemplate) - 1)]#random.randint(0, len(sentTemplate) - 1)] # random.randint(0, len(sentTemplate) - 1)
         # template = sentTemplate[11]
 

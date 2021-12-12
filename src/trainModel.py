@@ -9,18 +9,13 @@ import torch
 import time
 import math
 import pickle
-
-def epoch_time(start_time, end_time):
-    elapsed_time = end_time - start_time
-    elapsed_mins = int(elapsed_time / 60)
-    elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
-    return elapsed_mins, elapsed_secs
+from tqdm import tqdm
 
 if __name__ == '__main__':
     pathToRoberta = '../models/ruRoberta-large'
     pathToDataset = '../datasets/outputdataClean.csv'
     pathToOutputModel = '../models/robot-brain-v2.pt'
-    numData = 10000
+    numData = 50000
     numEpochs = 10
     clip = 1
 
@@ -46,7 +41,7 @@ if __name__ == '__main__':
     best_valid_loss = float('inf')
     bestModel = None
 
-    for epoch in range(numEpochs):
+    for epoch in tqdm(range(numEpochs)):
 
         start_time = time.time()
 
@@ -55,13 +50,10 @@ if __name__ == '__main__':
 
         end_time = time.time()
 
-        epoch_mins, epoch_secs = epoch_time(start_time, end_time)
-
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
             bestModel = pickle.loads(pickle.dumps(model))
 
-        print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
         print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
 
