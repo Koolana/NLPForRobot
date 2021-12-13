@@ -135,7 +135,7 @@ if __name__ == '__main__':
         exit()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print('Используется:', device)
+    print('Use:', device)
 
     if pathToData is not None:
         print('On metric mode')
@@ -145,12 +145,12 @@ if __name__ == '__main__':
         translater = Translater(pathToRoberta, pathToModel, device)
 
         while True:
-            inputSent = input('Введите предложение: ')
-            print('Ввод:', inputSent)
+            inputSent = input('Enter a sentence : ')
+            print('Input:', inputSent)
 
             cdmSent = translater.recognizeCmd(inputSent)
             cdmSent = ' '.join(cdmSent)
             cdmSent = re.sub('(\d+)([а-яА-Яa-zA-Z])', r'\1 \2', cdmSent)
             cdmSent = re.sub('([а-яА-Яa-zA-Z])(\d+)', r'\1 \2', cdmSent)
             cdmSent = re.sub('\s+', r' ', cdmSent).strip()
-            print('Вывод:', cdmSent)
+            print('Output:', cdmSent)
