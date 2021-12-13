@@ -4,6 +4,7 @@ from decoderTokenizer import DecoderTokenizer
 from dataProcessing import DataCreater
 from model import createModel
 from trainer import Trainer
+from utils import getConsoleArgs
 
 import torch
 import time
@@ -12,12 +13,39 @@ import pickle
 from tqdm import tqdm
 
 if __name__ == '__main__':
-    pathToRoberta = '../models/ruRoberta-large'
-    pathToDataset = '../datasets/outputdataClean.csv'
-    pathToOutputModel = '../models/robot-brain-v2.pt'
+    pathToRoberta = None
+    pathToDataset = None
+    pathToOutputModel = None
+
     numData = 50000
     numEpochs = 10
     clip = 1
+
+    inputArgv = getConsoleArgs()
+
+    if 'data' in inputArgv and inputArgv['data'] is not None:
+        pathToDataset = inputArgv['data']
+    else:
+        print('Invalid parameter \'data\'')
+        exit()
+
+    if 'roberta' in inputArgv and inputArgv['roberta'] is not None:
+        pathToRoberta = inputArgv['roberta']
+    else:
+        print('Invalid parameter \'roberta\'')
+        exit()
+
+    if 'model' in inputArgv and inputArgv['model'] is not None:
+        pathToOutputModel = inputArgv['model']
+    else:
+        print('Invalid parameters \'model\'')
+        exit()
+
+    if 'num' in inputArgv and inputArgv['num'] is not None:
+        numData = int(inputArgv['num'])
+
+    if 'epoch' in inputArgv and inputArgv['epoch'] is not None:
+        numEpochs = int(inputArgv['epoch'])
 
     tokenizerRoberta = RobertaTokenizer.from_pretrained(pathToRoberta)
     tokenizerEnc = WrapperRobertaTokenizer(tokenizerRoberta)
@@ -31,12 +59,16 @@ if __name__ == '__main__':
     trainDataLoader, valDataLoader = dataCreater.getDataLoaders()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print('Используется:', device)
+    print('Use:', device)
 
     model = createModel(device)
     trainer = Trainer(model, trainDataLoader, valDataLoader, device)
 
     print(f'The model has {trainer.count_parameters():,} trainable parameters')
+
+    print('Start training...')
+    print('\tNumber of data for training:', numData)
+    print('\tNumber of epochs:', numEpochs)
 
     best_valid_loss = float('inf')
     bestModel = None

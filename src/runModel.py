@@ -3,7 +3,6 @@
 # датасет в файле outputdataClean.csv формата: str(sentence),str(robot_sentence)
 
 import re
-import sys
 import torch
 from torchtext.data.metrics import bleu_score
 
@@ -16,24 +15,9 @@ from decoderTokenizer import DecoderTokenizer
 from dataProcessing import ensureLength
 from model import createModel
 from dataProcessing import DataCreater
+from utils import getConsoleArgs
 
 from lemmDataFromFile import sentsLemmatization
-
-def getConsoleArgs():
-    """
-    Returns a dictionary of arguments passed to through the CLI.
-    """
-
-    args = {}
-
-    for arg in sys.argv[1:]:
-        var = re.search('\-\-([A-Za-z]*)', arg) # optional value assignment
-        var = var.group(1)
-        value = re.search('\=(.*)', arg)
-        value = value.group(1) if value else None
-        args[var] = value
-
-    return args
 
 def calculateMetrics(pathToRoberta, pathToModel, pathToData, device):
     tokenizerRoberta = RobertaTokenizer.from_pretrained(pathToRoberta)
