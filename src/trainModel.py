@@ -17,7 +17,7 @@ if __name__ == '__main__':
     pathToDataset = None
     pathToOutputModel = None
 
-    numData = 50000
+    numData = 10000
     numEpochs = 10
     clip = 1
 

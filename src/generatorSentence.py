@@ -1,4 +1,5 @@
 from lemmDataFromFile import sentsLemmatization
+from utils import getConsoleArgs
 
 import random
 import re
@@ -230,8 +231,19 @@ def generateSent(numSent):
     return sents
 
 if __name__ == '__main__':
-    pathToDataset = '../datasets/outputdataClean.csv'
+    pathToDataset = None
     numSentences = 10000
+
+    inputArgv = getConsoleArgs()
+
+    if 'num' in inputArgv and inputArgv['num'] is not None:
+        numSentences = int(inputArgv['num'])
+
+    if 'data' in inputArgv and inputArgv['data'] is not None:
+        pathToDataset = inputArgv['data']
+    else:
+        print('Invalid parameter \'data\'')
+        exit()
 
     sents = generateSent(numSentences)
 

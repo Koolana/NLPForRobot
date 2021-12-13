@@ -4,6 +4,6 @@ python3 runModel.py --roberta='../models/ruRoberta-large' --model='../models/rob
 
 python3 runModel.py --roberta='../models/ruRoberta-large' --model='../models/robot-brain-v2.pt' - to start recognition
 
-python3 generatorSentence.py - to start generating sentences
+python3 generatorSentence.py --data='../datasets/outputdata1.csv' --num=1000 - to start generating sentences
 
 python3 trainModel.py --roberta='../models/ruRoberta-large' --model='../models/robot-brain-v2.pt' --data='../datasets/outputdataClean.csv' - to start training model
