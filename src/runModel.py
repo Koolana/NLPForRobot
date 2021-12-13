@@ -7,6 +7,9 @@ import sys
 import torch
 from torchtext.data.metrics import bleu_score
 
+import numpy
+import sklearn.metrics
+
 from transformers import RobertaTokenizer
 from wrapperRobertaTokenizer import WrapperRobertaTokenizer
 from decoderTokenizer import DecoderTokenizer
@@ -43,30 +46,35 @@ def calculateMetrics(pathToRoberta, pathToModel, pathToData, device):
     dataCreater = DataCreater(tokenizerEnc.convertSentToIds,
                               tokenizerDec.convertSentToIds,
                               path=pathToData,
-                              numData=5000)
+                              numData=100)
 
     testDataLoader, _ = dataCreater.getDataLoaders(splitValue=1, batchSize=1)
 
-    return calculateBleu(testDataLoader, tokenizerDec, model, device)
-
-def calculateBleu(data, tokenizerDec, model, device, max_len = 50):
     trgs = []
     pred_trgs = []
+    accs = []
 
-    for datum in data:
+    for datum in testDataLoader:
         src = datum[0][0].tolist()
         trg = datum[1][0].tolist()
 
         trgTokens = tokenizerDec.convertIdsToSent(trg, src)
 
-        pred_trg, _ = translate_sentence(src, 0, 0, model, device, max_len)
+        predTrg, _ = translate_sentence(src, 0, 0, model, device, 50)
+        predTrg = ensureLength(predTrg)
 
-        pred_trg = tokenizerDec.convertIdsToSent(ensureLength(pred_trg), src)
+        r = sklearn.metrics.confusion_matrix(trg, predTrg)
+        r = numpy.flip(r)
+
+        acc = (r[0][0] + r[-1][-1]) / numpy.sum(r)
+        accs.append(acc)
+
+        predTokens = tokenizerDec.convertIdsToSent(ensureLength(predTrg), src)
 
         trgs.append([trgTokens])
-        pred_trgs.append(pred_trg)
+        pred_trgs.append(predTokens)
 
-    return bleu_score(pred_trgs, trgs)
+    return bleu_score(pred_trgs, trgs), sum(accs) / len(accs)
 
 def translate_sentence(inputIds, src_field, trg_field, model, device, max_len=50):
     model.eval()
@@ -147,7 +155,7 @@ if __name__ == '__main__':
 
     if pathToData is not None:
         print('On metric mode')
-        print('BLUE score:', calculateMetrics(pathToRoberta, pathToModel, pathToData, device))
+        print('BLUE score: {0:.3}, accuracy: {1:.3}'.format(*calculateMetrics(pathToRoberta, pathToModel, pathToData, device)))
     else:
         print('On recognition mode')
         translater = Translater(pathToRoberta, pathToModel, device)

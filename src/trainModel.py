@@ -54,7 +54,7 @@ if __name__ == '__main__':
             best_valid_loss = valid_loss
             bestModel = pickle.loads(pickle.dumps(model))
 
-        print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
+        print(f'\n\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
 
     torch.save(bestModel.state_dict(), pathToOutputModel)
