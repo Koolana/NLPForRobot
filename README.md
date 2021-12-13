@@ -1,4 +1,4 @@
-# Point Generation Network <br/> in the motion command recognition task for Russian language
+# Point Generation Network <br/> in the motion command recognition task <br/> for Russian language
 
 The main goal is to implement a mechanism for robot recognition of systematized commands from unstructured sources, in particular, human speech.
 The tasks we set for this project:
