@@ -1,4 +1,5 @@
 # Launch
+## Point Generation Network in the motion command recognition task
 
 python3 runModel.py --roberta='../models/ruRoberta-large' --model='../models/robot-brain-v2.pt' --metric='../datasets/outputdataTest.csv' - to start metrics calculations
 
