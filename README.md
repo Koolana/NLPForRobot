@@ -6,6 +6,8 @@ The tasks we set for this project:
 2. Implement an encoder that will convert an incoming sequence containing a motion command into a context vector.
 3. Implement a Point Generation Network (PGN)-based decoder to correctly fill the output command slots from the incoming sequence.
 
+More details in the file **report/NLP_project.pdf**
+
 ## Getting Started
 
 ### Requirements
@@ -22,7 +24,7 @@ scikit-learn==0.24.2
 torchtext==0.11.0
 ```
 
-Also, the project uses a tokenizer from the model [ruRoberta](https://huggingface.co/sberbank-ai/ruRoberta-large). This model must be downloaded and moved into **/models** folder. 
+Also, the project uses a tokenizer from the model [ruRoberta](https://huggingface.co/sberbank-ai/ruRoberta-large). This model must be downloaded and moved into **models** folder. 
 
 ### Installing
 
@@ -32,7 +34,7 @@ git clone https://github.com/Koolana/NLPForRobot.git
 
 ## Launch
 
-Scripts for launching and testing are located in the **/src** folder, further instructions are run from this folder
+Scripts for launching and testing are located in the **src** folder, further instructions are run from it folder
 
 ### Generate data
 
