@@ -6,7 +6,7 @@ The tasks we set for this project:
 2. Implement an encoder that will convert an incoming sequence containing a motion command into a context vector.
 3. Implement a Point Generation Network (PGN)-based decoder to correctly fill the output command slots from the incoming sequence.
 
-More details in the file **report/NLP_project.pdf**
+More details in the file [report/NLP_project.pdf](report/NLP_project.pdf)
 
 ## Getting Started
 
